@@ -1,0 +1,21 @@
+.img-container {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  height: 100%;
+  width: 100%;
+  padding: 10px;
+  justify-content: center;
+  background-color: black;
+}
+.each-img {
+  margin: 10px;
+}
+.image {
+  height: 150px;
+  width: 150px;
+}
+
+.container {
+  background-color: black;
+}
