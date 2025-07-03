@@ -3,12 +3,10 @@ import {Component} from 'react'
 import Cookies from 'js-cookie'
 import {Link} from 'react-router-dom'
 
-import Footer from '../Footer'
+// import Footer from '../Footer'
 import FailureView from '../FailureView'
-// import PlayVideoView from '../PlayVideoView'
 
 import Header from '../Header'
-// import Footer from '../Footer'
 
 import './index.css'
 import MovieDetail from '../MovieDetail'
@@ -147,21 +145,17 @@ class MovieItemDetails extends Component {
     }
     return (
       <>
-        {/* <p className="json">{JSON.stringify(movieDetails)}</p> */}
-        {/* <PlayVideoView movieDetails={movieDetails} /> */}
-
         <div>
           {movieDetails.map(each => (
             <MovieDetail movieDetails={each} key={each.id} />
           ))}
         </div>
-
         <div className="additional-movie-info-container additional-info-sm-container">
           <ul className="each-genre-ul-container">
             <h1 className="movie-info-genre-heading">Genres</h1>
             {genres.map(eachGenre => (
               <li className="movie-info-each-genre" key={eachGenre.id}>
-                {eachGenre.name}
+                <p> {eachGenre.name}</p>
               </li>
             ))}
           </ul>
@@ -169,23 +163,19 @@ class MovieItemDetails extends Component {
             <h1 className="movie-info-genre-heading">Audio Available</h1>
             {spokenLanguages.map(eachAudio => (
               <li className="movie-info-each-genre" key={eachAudio.id}>
-                {eachAudio.language}
+                <p>{eachAudio.language}</p>
               </li>
             ))}
           </ul>
           <div className="each-genre-ul-container">
             <h1 className="movie-info-rating-count-heading">Rating Count</h1>
             <p className="movie-info-rating-count">{count}</p>
-            {/* <p>{JSON.stringify(movieDetails)}</p> */}
-            {/* <p>{JSON.stringify(newMovieDetails)}</p> */}
             <h1 className="movie-info-rating-avg-heading">Rating Average</h1>
             <p className="movie-info-rating">{rating}</p>
           </div>
           <div className="each-genre-ul-container">
             <h1 className="movie-info-budget-heading">Budget</h1>
             <p className="movie-info-budget">{budget}</p>
-            {/* <p>{JSON.stringify(movieDetails)}</p> */}
-            {/* <p>{JSON.stringify(newMovieDetails)}</p> */}
             <h1 className="movie-info-release-date">Release Date </h1>
             <p>
               <span className="movie-info-date">{day}</span>
@@ -241,8 +231,7 @@ class MovieItemDetails extends Component {
           >
             {this.renderVideoDetailView()}
           </div>
-          <Footer />
-          <p>Contact us</p>
+          <p> Contact us</p>
         </div>
       </div>
     )

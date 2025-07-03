@@ -7,7 +7,6 @@
   padding: 20px;
   height: 60px;
   width: 100%;
-  /* position: fixed; */
 }
 .header-logo {
   width: 80px;
@@ -31,7 +30,6 @@
   width: 30px;
   height: 30px;
   margin-right: 10px;
-  /* display: none; */
   visibility: hidden;
   text-align: center;
 }
@@ -129,8 +127,7 @@
 .icon {
   color: #ffffff;
   height: 25px;
-
-  margin-left: 10px;
+  margin-left: 30px;
 }
 
 .active {

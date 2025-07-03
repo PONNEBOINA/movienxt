@@ -14,9 +14,10 @@
 .home-poster-title {
   font-family: 'HK Grotesk';
   font-style: normal;
-  font-weight: 600;
+  font-weight: 500;
   line-height: 46.91px;
   color: #ffffff;
+  text-decoration: underline;
 }
 
 .home-poster-overview {
@@ -33,7 +34,7 @@
   flex-direction: column;
   justify-content: center;
   align-items: flex-start;
-  padding: 50px;
+  padding: 40px;
 }
 .home-poster-play-btn {
   background: #ffffff;
@@ -79,23 +80,17 @@
   }
 }
 .home-header-content {
-  padding: 60px;
-}
-
-@media screen and (max-height: 768px) {
-  .home-header-content {
-    padding: 30px;
-  }
+  padding: 50px;
 }
 
 .movie-details-name {
   margin-bottom: 5px;
   font-style: normal;
   font-weight: 600;
-  font-size: 45px;
+  font-size: 25px;
   line-height: 62px;
   color: #ffffff;
-  margin-top: 30px;
+  margin-top: 1px;
 }
 
 .movies-details-play-button {
@@ -109,7 +104,7 @@
   font-weight: 600;
   background: #ffffff;
   border-radius: 4px;
-  margin-top: 40px;
+  margin-top: 30px;
 }
 
 .movie-details-description {
@@ -122,21 +117,65 @@
   color: #ffffff;
   width: 90%;
 }
+@media screen and (max-width: 767px) {
+  .sm-devices {
+    display: block;
+  }
 
-@media (max-width: 767px) {
-  .movie-details-description {
-    width: 90%;
-    font-size: 18px;
-    margin-top: 30px;
-    line-height: 16px;
+  .lg-devices {
+    visibility: hidden;
   }
+
+  .home-poster-title {
+    font-size: 32px;
+    font-weight: 500;
+    line-height: 40px;
+    text-decoration: underline;
+  }
+
+  .home-poster-overview {
+    font-size: 16px;
+    line-height: 20px;
+    margin-top: 20px;
+  }
+
+  .home-poster-play-btn {
+    width: 60px;
+    height: 30px;
+    margin-top: 20px;
+  }
+
+  .heading-container {
+    padding: 20px;
+    align-items: center;
+    text-align: center;
+  }
+
+  .devices-container {
+    min-height: 500px;
+    padding: 20px;
+  }
+
+  .home-header-content {
+    padding: 20px;
+  }
+
   .movie-details-name {
-    font-size: 18px;
-    margin-bottom: 0px;
-    line-height: 50px;
+    font-size: 20px;
+    line-height: 40px;
+    margin-top: 10px;
   }
+
+  .movie-details-description {
+    font-size: 16px;
+    line-height: 22px;
+    width: 100%;
+    margin-top: 20px;
+  }
+
   .movies-details-play-button {
-    padding: 8px 8px;
-    font-size: 8px;
+    padding: 8px 12px;
+    font-size: 14px;
+    margin-top: 20px;
   }
 }

@@ -74,7 +74,7 @@ class SearchFilter extends Component {
   renderFailureView = () => <FailureView onRetry={this.onRetry} />
 
   renderLoadingView = () => (
-    <div className="loader-container">
+    <div className="loader-container" data-testid="loader">
       <Loader type="TailSpin" height={35} width={380} color=" #D81F26" />
     </div>
   )
@@ -99,9 +99,9 @@ class SearchFilter extends Component {
   renderResultsView = () => {
     const {searchMovies} = this.state
     return (
-      <>
+      <div>
         {searchMovies.length > 0 ? (
-          <>
+          <div>
             <div className="search-filter-bg-container">
               <div className="search-filter-movies-list-container">
                 <ul className="search-filter-ul-container">
@@ -119,11 +119,11 @@ class SearchFilter extends Component {
                 </ul>
               </div>
             </div>
-          </>
+          </div>
         ) : (
           this.renderNotfoundMovies()
         )}
-      </>
+      </div>
     )
   }
 
@@ -132,7 +132,7 @@ class SearchFilter extends Component {
     const isEmpty = searchValue === ''
     console.log(isEmpty)
     return (
-      <div>
+      <>
         {isEmpty ? (
           <div className="search-filter-initial-no-search">
             <p className="empty-text">
@@ -142,7 +142,7 @@ class SearchFilter extends Component {
         ) : (
           this.renderResultsView()
         )}
-      </div>
+      </>
     )
   }
 

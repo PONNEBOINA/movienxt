@@ -51,7 +51,6 @@ class Home extends Component {
         overview: randomPoster.overview,
         backdropPath: randomPoster.backdrop_path,
         title: randomPoster.title,
-
         posterPath: randomPoster.poster_path,
       }
       // console.log(updatedData)

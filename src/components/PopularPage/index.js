@@ -61,7 +61,7 @@ class PopularPage extends Component {
     const {popularMovies} = this.state
     const fewMovies = popularMovies.slice(0, 16)
     return (
-      <>
+      <div data-testid="loader">
         <ul className="img-container">
           {fewMovies.map(each => (
             <Link to={`/movies/${each.id}`} key={each.id}>
@@ -71,7 +71,7 @@ class PopularPage extends Component {
             </Link>
           ))}
         </ul>
-      </>
+      </div>
     )
   }
 
