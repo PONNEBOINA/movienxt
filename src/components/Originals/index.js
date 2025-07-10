@@ -1,6 +1,7 @@
-import {Component} from 'react'
+import {useEffect, useState} from 'react'
 import Cookies from 'js-cookie'
 import Loader from 'react-loader-spinner'
+
 import ReactSlick from '../ReactSlick'
 import FailureView from '../FailureView'
 import './index.css'
@@ -12,20 +13,12 @@ const apiStatusConstants = {
   inProgress: 'IN_PROGRESS',
 }
 
-class Originals extends Component {
-  state = {
-    originals: [],
-    apiStatus: apiStatusConstants.initial,
-  }
+const Originals = () => {
+  const [originals, setOriginals] = useState([])
+  const [apiStatus, setApiStatus] = useState(apiStatusConstants.initial)
 
-  componentDidMount() {
-    this.getOriginals()
-  }
-
-  getOriginals = async () => {
-    this.setState({
-      apiStatus: apiStatusConstants.inProgress,
-    })
+  const getOriginals = async () => {
+    setApiStatus(apiStatusConstants.inProgress)
     const jwtToken = Cookies.get('jwt_token')
     const apiUrl = `https://apis.ccbp.in/movies-app/originals`
     const options = {
@@ -36,72 +29,58 @@ class Originals extends Component {
     }
 
     const response = await fetch(apiUrl, options)
-    if (response.ok === true) {
+    if (response.ok) {
       const data = await response.json()
-      // console.log(data)
       const updatedData = data.results.map(each => ({
         id: each.id,
         posterPath: each.poster_path,
         title: each.title,
       }))
-      // console.log(updatedData)
-      this.setState({
-        originals: updatedData,
-        apiStatus: apiStatusConstants.success,
-      })
+      setOriginals(updatedData)
+      setApiStatus(apiStatusConstants.success)
     } else {
-      this.setState({
-        apiStatus: apiStatusConstants.failure,
-      })
+      setApiStatus(apiStatusConstants.failure)
     }
   }
 
-  onRetry = () => {
-    this.getOriginals()
+  useEffect(() => {
+    getOriginals()
+  }, [])
+
+  const onRetry = () => {
+    getOriginals()
   }
 
-  renderFailureView = () => <FailureView onRetry={this.onRetry} />
+  const renderFailureView = () => <FailureView onRetry={onRetry} />
 
-  renderLoadingView = () => (
+  const renderLoadingView = () => (
     <div className="loader-container">
       <Loader
         testid="loader"
         type="TailSpin"
         height={35}
         width={380}
-        color=" #D81F26"
+        color="#D81F26"
       />
     </div>
   )
 
-  renderSuccessView = () => {
-    const {originals} = this.state
-    return (
-      <>
-        <ReactSlick movies={originals} />
-      </>
-    )
-  }
+  const renderSuccessView = () => <ReactSlick movies={originals} />
 
-  renderOriginals = () => {
-    const {apiStatus} = this.state
+  const renderOriginals = () => {
     switch (apiStatus) {
       case apiStatusConstants.success:
-        return this.renderSuccessView()
+        return renderSuccessView()
       case apiStatusConstants.failure:
-        return this.renderFailureView()
+        return renderFailureView()
       case apiStatusConstants.inProgress:
-        return this.renderLoadingView()
-
+        return renderLoadingView()
       default:
         return null
     }
   }
 
-  render() {
-    return (
-      <div className="trending-now-container">{this.renderOriginals()}</div>
-    )
-  }
+  return <div className="trending-now-container">{renderOriginals()}</div>
 }
+
 export default Originals

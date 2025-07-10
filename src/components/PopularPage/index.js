@@ -1,12 +1,13 @@
-import {Component} from 'react'
+import {useState, useEffect} from 'react'
 import Loader from 'react-loader-spinner'
 import Cookies from 'js-cookie'
 import {Link} from 'react-router-dom'
+
 import FailureView from '../FailureView'
 import Footer from '../Footer'
+import Header from '../Header'
 
 import './index.css'
-import Header from '../Header'
 
 const apiStatusContext = {
   initial: 'INITIAL',
@@ -15,57 +16,54 @@ const apiStatusContext = {
   inProgress: 'IN_PROGRESS',
 }
 
-class PopularPage extends Component {
-  state = {
-    popularMovies: [],
-    apiStatus: apiStatusContext.initial,
-  }
+const PopularPage = () => {
+  const [popularMovies, setPopularMovies] = useState([])
+  const [apiStatus, setApiStatus] = useState(apiStatusContext.initial)
 
-  componentDidMount() {
-    this.renderPopularView()
-  }
+  const fetchPopularMovies = async () => {
+    setApiStatus(apiStatusContext.inProgress)
 
-  renderPopularView = async () => {
-    this.setState({apiStatus: apiStatusContext.inProgress})
     const jwtToken = Cookies.get('jwt_token')
     const url = 'https://apis.ccbp.in/movies-app/popular-movies'
-    const option = {
+    const options = {
       method: 'GET',
       headers: {
         Authorization: `Bearer ${jwtToken}`,
       },
     }
-    const response = await fetch(url, option)
-    if (response.ok === true) {
+
+    const response = await fetch(url, options)
+    if (response.ok) {
       const data = await response.json()
-      const updateData = data.results.map(each => ({
+      const updatedData = data.results.map(each => ({
         backdropPath: each.backdrop_path,
         id: each.id,
         posterPath: each.poster_path,
         title: each.title,
       }))
-      this.setState({
-        popularMovies: updateData,
-        apiStatus: apiStatusContext.success,
-      })
+      setPopularMovies(updatedData)
+      setApiStatus(apiStatusContext.success)
     } else {
-      this.setState({apiStatus: apiStatusContext.failure})
+      setApiStatus(apiStatusContext.failure)
     }
   }
 
-  onRetry = () => {
-    this.renderPopularView()
+  useEffect(() => {
+    fetchPopularMovies()
+  }, [])
+
+  const onRetry = () => {
+    fetchPopularMovies()
   }
 
-  renderSuccessView = () => {
-    const {popularMovies} = this.state
-    const fewMovies = popularMovies.slice(0, 16)
+  const renderSuccessView = () => {
+    const fewMovies = popularMovies.slice(0, 26)
     return (
       <div data-testid="loader">
         <ul className="img-container">
           {fewMovies.map(each => (
             <Link to={`/movies/${each.id}`} key={each.id}>
-              <li key={each.id} className="each-img">
+              <li className="each-img">
                 <img src={each.posterPath} alt={each.title} className="image" />
               </li>
             </Link>
@@ -75,51 +73,40 @@ class PopularPage extends Component {
     )
   }
 
-  renderFailureView = () => <FailureView onRetry={this.onRetry} />
+  const renderFailureView = () => <FailureView onRetry={onRetry} />
 
-  renderLoading = () => (
+  const renderLoading = () => (
     <div className="loader-container" data-testid="loader">
       <Loader
         testid="loader"
         type="TailSpin"
         height={35}
         width={380}
-        color=" #D81F26"
+        color="#D81F26"
       />
     </div>
   )
 
-  renderPopularPage = () => {
-    const {apiStatus} = this.state
+  const renderPopularPage = () => {
     switch (apiStatus) {
       case apiStatusContext.success:
-        return this.renderSuccessView()
+        return renderSuccessView()
       case apiStatusContext.failure:
-        return this.renderFailureView()
+        return renderFailureView()
       case apiStatusContext.inProgress:
-        return this.renderLoading()
+        return renderLoading()
       default:
         return null
     }
   }
 
-  render() {
-    return (
-      <div className="container" data-testid="loader">
-        <Header />
-        <div>{this.renderPopularPage()}</div>
-        <Footer />
-      </div>
-    )
-  }
+  return (
+    <div className="container" data-testid="loader">
+      <Header />
+      <div>{renderPopularPage()}</div>
+      <Footer />
+    </div>
+  )
 }
 
 export default PopularPage
-
-//     <img
-//       src="https://res.cloudinary.com/dnxbl0xrb/image/upload/v1729667371/Group_7399_os0yqk.svg"
-//       className="login-website-logo-desktop-image"
-//       alt="website logo"
-//     />
-
-// export default PopularPage

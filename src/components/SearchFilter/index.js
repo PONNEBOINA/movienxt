@@ -1,10 +1,13 @@
-import {Component} from 'react'
+import {useState, useEffect, useCallback} from 'react'
 import {Link} from 'react-router-dom'
 import Cookies from 'js-cookie'
 import Loader from 'react-loader-spinner'
+import debounce from 'lodash.debounce'
+
 import Header from '../Header'
 import FailureView from '../FailureView'
 import Footer from '../Footer'
+
 import './index.css'
 
 const apiStatusConstants = {
@@ -14,161 +17,141 @@ const apiStatusConstants = {
   inProgress: 'IN_PROGRESS',
 }
 
-class SearchFilter extends Component {
-  state = {
-    searchValue: '',
-    searchMovies: [],
-    apiStatus: apiStatusConstants.initial,
-  }
+const SearchFilter = () => {
+  const [searchValue, setSearchValue] = useState('')
+  const [searchMovies, setSearchMovies] = useState([])
+  const [apiStatus, setApiStatus] = useState(apiStatusConstants.initial)
 
-  componentDidMount() {
-    this.getSearchMovies()
-  }
-
-  getSearchMovies = async () => {
-    const {searchValue} = this.state
+  const getSearchMovies = async value => {
+    if (value.trim() === '') {
+      setSearchMovies([])
+      setApiStatus(apiStatusConstants.success)
+      return
+    }
+    setApiStatus(apiStatusConstants.inProgress)
 
     const jwtToken = Cookies.get('jwt_token')
-    const apiUrl = `https://apis.ccbp.in/movies-app/movies-search?search=${searchValue}`
+    const apiUrl = `https://apis.ccbp.in/movies-app/movies-search?search=${value}`
+
     const options = {
       method: 'GET',
       headers: {
         Authorization: `Bearer ${jwtToken}`,
       },
     }
+
     const response = await fetch(apiUrl, options)
-    if (response.ok === true) {
+
+    if (response.ok) {
       const data = await response.json()
-      // console.log(data)
       const updatedData = data.results.map(each => ({
-        posterPath: each.poster_path,
-        title: each.title,
         id: each.id,
+        title: each.title,
+        posterPath: each.poster_path,
         backdropPath: each.backdrop_path,
       }))
-
-      this.setState({
-        searchMovies: updatedData,
-        apiStatus: apiStatusConstants.success,
-      })
+      setSearchMovies(updatedData)
+      setApiStatus(apiStatusConstants.success)
     } else {
-      this.setState({
-        apiStatus: apiStatusConstants.failure,
-      })
+      setApiStatus(apiStatusConstants.failure)
     }
   }
 
-  searchInput = text => {
-    this.setState(
-      {
-        searchValue: text,
-      },
-      this.getSearchMovies,
-    )
+  const debouncedSearch = useCallback(
+    debounce(value => {
+      getSearchMovies(value)
+    }, 500),
+    [],
+  )
+
+  const handleSearchInput = text => {
+    setSearchValue(text)
+    debouncedSearch(text)
   }
 
-  onRetry = () => {
-    this.getSearchMovies()
+  const onRetry = () => {
+    getSearchMovies(searchValue)
   }
 
-  renderFailureView = () => <FailureView onRetry={this.onRetry} />
+  const renderFailureView = () => <FailureView onRetry={onRetry} />
 
-  renderLoadingView = () => (
+  const renderLoadingView = () => (
     <div className="loader-container" data-testid="loader">
       <Loader type="TailSpin" height={35} width={380} color=" #D81F26" />
     </div>
   )
 
-  renderNotfoundMovies = () => {
-    const {searchValue} = this.state
-    console.log(searchValue)
-    return (
-      <div className="search-heading-container">
-        <img
-          src="https://res.cloudinary.com/dyx9u0bif/image/upload/v1657092588/Group_7394_jzwy1v.png"
-          alt="no movies"
-          className="search-not-found-image"
-        />
-        <h1 className="search-not-found-heading">
-          Your search for {searchValue} did not find any matches.
-        </h1>
+  const renderNotFoundMovies = () => (
+    <div className="search-heading-container">
+      <img
+        src="https://res.cloudinary.com/dyx9u0bif/image/upload/v1657092588/Group_7394_jzwy1v.png"
+        alt="no movies"
+        className="search-not-found-image"
+      />
+      <h1 className="search-not-found-heading">
+        Your search for <span style={{color: '#fff'}}>{searchValue}</span> did
+        not find any matches.
+      </h1>
+    </div>
+  )
+
+  const renderResultsView = () => (
+    <div className="search-filter-bg-container">
+      <div className="search-filter-movies-list-container">
+        <ul className="search-filter-ul-container">
+          {searchMovies.map(each => (
+            <Link to={`/movies/${each.id}`} key={each.id}>
+              <li className="search-filter-li-item">
+                <img
+                  className="search-poster"
+                  src={each.posterPath}
+                  alt={each.title}
+                />
+              </li>
+            </Link>
+          ))}
+        </ul>
       </div>
-    )
+    </div>
+  )
+
+  const renderSuccessView = () => {
+    const isEmpty = searchValue.trim() === ''
+    if (isEmpty) {
+      return (
+        <div className="search-filter-initial-no-search">
+          <p className="empty-text">
+            Search the movie by typing in the search bar
+          </p>
+        </div>
+      )
+    }
+
+    return searchMovies.length > 0
+      ? renderResultsView()
+      : renderNotFoundMovies()
   }
 
-  renderResultsView = () => {
-    const {searchMovies} = this.state
-    return (
-      <div>
-        {searchMovies.length > 0 ? (
-          <div>
-            <div className="search-filter-bg-container">
-              <div className="search-filter-movies-list-container">
-                <ul className="search-filter-ul-container">
-                  {searchMovies.map(each => (
-                    <Link to={`/movies/${each.id}`} key={each.id}>
-                      <li className="search-filter-li-item" key={each.id}>
-                        <img
-                          className="search-poster"
-                          src={each.posterPath}
-                          alt={each.title}
-                        />
-                      </li>
-                    </Link>
-                  ))}
-                </ul>
-              </div>
-            </div>
-          </div>
-        ) : (
-          this.renderNotfoundMovies()
-        )}
-      </div>
-    )
-  }
-
-  renderSuccessView = () => {
-    const {searchValue} = this.state
-    const isEmpty = searchValue === ''
-    console.log(isEmpty)
-    return (
-      <>
-        {isEmpty ? (
-          <div className="search-filter-initial-no-search">
-            <p className="empty-text">
-              Search the movie,by clicking on the search Icon
-            </p>
-          </div>
-        ) : (
-          this.renderResultsView()
-        )}
-      </>
-    )
-  }
-
-  renderSearchMovies = () => {
-    const {apiStatus} = this.state
+  const renderSearchResults = () => {
     switch (apiStatus) {
       case apiStatusConstants.success:
-        return this.renderSuccessView()
+        return renderSuccessView()
       case apiStatusConstants.failure:
-        return this.renderFailureView()
+        return renderFailureView()
       case apiStatusConstants.inProgress:
-        return this.renderLoadingView()
-
+        return renderLoadingView()
       default:
         return null
     }
   }
 
-  render() {
-    return (
-      <div className="search-filter-bg-container">
-        <Header searchInput={this.searchInput} />
-        <div>{this.renderSearchMovies()}</div>
-        <Footer />
-      </div>
-    )
-  }
+  return (
+    <div className="search-filter-bg-container">
+      <Header searchInput={handleSearchInput} />
+      {renderSearchResults()}
+      <Footer />
+    </div>
+  )
 }
+
 export default SearchFilter

@@ -1,6 +1,7 @@
-import {Component} from 'react'
+import {useState, useEffect} from 'react'
 import Cookies from 'js-cookie'
 import Loader from 'react-loader-spinner'
+
 import HomePoster from '../HomePoster'
 import Header from '../Header'
 import './index.css'
@@ -16,22 +17,16 @@ const apiStatusConstants = {
   inProgress: 'IN_PROGRESS',
 }
 
-class Home extends Component {
-  state = {
-    initialPoster: {},
-    apiStatus: apiStatusConstants.initial,
-  }
+const Home = () => {
+  const [initialPoster, setInitialPoster] = useState({})
+  const [apiStatus, setApiStatus] = useState(apiStatusConstants.initial)
 
-  componentDidMount() {
-    this.getHomePagePoster()
-  }
+  const getHomePagePoster = async () => {
+    setApiStatus(apiStatusConstants.inProgress)
 
-  getHomePagePoster = async () => {
-    this.setState({
-      apiStatus: apiStatusConstants.inProgress,
-    })
     const jwtToken = Cookies.get('jwt_token')
-    const apiUrl = `https://apis.ccbp.in/movies-app/originals`
+    const apiUrl = 'https://apis.ccbp.in/movies-app/originals'
+
     const options = {
       method: 'GET',
       headers: {
@@ -40,12 +35,12 @@ class Home extends Component {
     }
 
     const response = await fetch(apiUrl, options)
-    if (response.ok === true) {
+
+    if (response.ok) {
       const data = await response.json()
-      // console.log(data)
-      const fetchedDataLength = data.results.length
       const randomPoster =
-        data.results[Math.floor(Math.random() * fetchedDataLength)]
+        data.results[Math.floor(Math.random() * data.results.length)]
+
       const updatedData = {
         id: randomPoster.id,
         overview: randomPoster.overview,
@@ -53,79 +48,72 @@ class Home extends Component {
         title: randomPoster.title,
         posterPath: randomPoster.poster_path,
       }
-      // console.log(updatedData)
-      this.setState({
-        initialPoster: {...updatedData},
-        apiStatus: apiStatusConstants.success,
-      })
+
+      setInitialPoster(updatedData)
+      setApiStatus(apiStatusConstants.success)
     } else {
-      this.setState({
-        apiStatus: apiStatusConstants.failure,
-      })
+      setApiStatus(apiStatusConstants.failure)
     }
   }
 
-  onRetry = () => {
-    this.getHomePagePoster()
+  useEffect(() => {
+    getHomePagePoster()
+  }, [])
+
+  const onRetry = () => {
+    getHomePagePoster()
   }
 
-  renderFailureView = () => <FailureView onRetry={this.onRetry} />
+  const renderFailureView = () => <FailureView onRetry={onRetry} />
 
-  renderLoadingView = () => (
+  const renderLoadingView = () => (
     <div className="loader-container" data-testid="loader">
       <Loader
-        testid="loader"
         type="TailSpin"
         height={35}
         width={380}
-        color=" #D81F26"
+        color="#D81F26"
         data-testid="loader"
       />
     </div>
   )
 
-  renderSuccessView = () => {
-    const {initialPoster} = this.state
-    return (
-      <>
-        <HomePoster poster={initialPoster} />
-      </>
-    )
-  }
+  const renderSuccessView = () => (
+    <>
+      <HomePoster poster={initialPoster} />
+    </>
+  )
 
-  renderHomePoster = () => {
-    const {apiStatus} = this.state
+  const renderHomePoster = () => {
     switch (apiStatus) {
       case apiStatusConstants.success:
-        return this.renderSuccessView()
+        return renderSuccessView()
       case apiStatusConstants.failure:
-        return this.renderFailureView()
+        return renderFailureView()
       case apiStatusConstants.inProgress:
-        return this.renderLoadingView()
-
+        return renderLoadingView()
       default:
         return null
     }
   }
 
-  render() {
-    return (
-      <div className="root-container" data-testid="loader">
-        <Header />
-        <div className="home-sizes-container">{this.renderHomePoster()}</div>
+  return (
+    <div className="root-container" data-testid="loader">
+      <Header />
+      <div className="home-sizes-container">{renderHomePoster()}</div>
+      <div>
         <div>
-          <div>
-            <h1 className="trending-now-heading">Trending Now</h1>
-            <Trending />
-          </div>
-          <div>
-            <h1 className="originals-heading">Originals</h1>
-            <Originals />
-          </div>
+          <h1 className="trending-now-heading">Trending Now</h1>
+          <Trending />
         </div>
-        <Footer />
+        <div>
+          <h1 className="originals-heading">Originals</h1>
+          <Originals />
+        </div>
       </div>
-    )
-  }
+      <Footer />
+    </div>
+  )
 }
+
 export default Home

@@ -1,12 +1,9 @@
-import {Component} from 'react'
-import {Link, withRouter} from 'react-router-dom'
-
-import './index.css'
-
+import {Link} from 'react-router-dom'
 import Slider from 'react-slick'
 
 import 'slick-carousel/slick/slick.css'
 import 'slick-carousel/slick/slick-theme.css'
+import './index.css'
 
 const settings = {
   dots: false,
@@ -40,34 +37,24 @@ const settings = {
   ],
 }
 
-class ReactSlick extends Component {
-  renderSlider = () => {
-    const {movies} = this.props
-    return (
-      <>
-        <Slider {...settings}>
-          {movies.map(each => (
-            <Link to={`/movies/${each.id}`} key={each.id}>
-              <li className="react-slick-li-item" key={each.id}>
-                <img
-                  className="slick-movie-img"
-                  src={each.posterPath}
-                  alt={each.title}
-                />
-              </li>
-            </Link>
-          ))}
-        </Slider>
-      </>
-    )
-  }
+const ReactSlick = ({movies}) => (
+  <div className="slick-app-container">
+    <div style={{width: '95%'}}>
+      <Slider {...settings}>
+        {movies.map(each => (
+          <Link to={`/movies/${each.id}`} key={each.id}>
+            <li className="react-slick-li-item" key={each.id}>
+              <img
+                className="slick-movie-img"
+                src={each.posterPath}
+                alt={each.title}
+              />
+            </li>
+          </Link>
+        ))}
+      </Slider>
+    </div>
+  </div>
+)
 
-  render() {
-    return (
-      <div className="slick-app-container">
-        <div style={{width: '95%'}}>{this.renderSlider()}</div>
-      </div>
-    )
-  }
-}
-export default withRouter(ReactSlick)
+export default ReactSlick

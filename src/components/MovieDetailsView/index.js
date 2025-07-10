@@ -1,15 +1,12 @@
-import Loader from 'react-loader-spinner'
-import {Component} from 'react'
+import {useEffect, useState} from 'react'
+import {withRouter, Link} from 'react-router-dom'
 import Cookies from 'js-cookie'
-import {Link} from 'react-router-dom'
-
-// import Footer from '../Footer'
+import Loader from 'react-loader-spinner'
 import FailureView from '../FailureView'
-
 import Header from '../Header'
+import MovieDetail from '../MovieDetail'
 
 import './index.css'
-import MovieDetail from '../MovieDetail'
 
 const apiStatusConstants = {
   initial: 'INITIAL',
@@ -18,131 +15,110 @@ const apiStatusConstants = {
   inProgress: 'IN_PROGRESS',
 }
 
-class MovieItemDetails extends Component {
-  state = {
-    apiStatus: apiStatusConstants.initial,
-    movieDetails: [],
-    genres: [],
-    spokenLanguages: [],
-    similarMovies: [],
-  }
+const MovieItemDetails = props => {
+  const [apiStatus, setApiStatus] = useState(apiStatusConstants.initial)
+  const [movieDetails, setMovieDetails] = useState([])
+  const [genres, setGenres] = useState([])
+  const [spokenLanguages, setSpokenLanguages] = useState([])
+  const [similarMovies, setSimilarMovies] = useState([])
 
-  componentDidMount() {
-    this.getMovieDetails()
-  }
+  const {match} = props
+  const {params} = match
+  const {id} = params
 
-  getMovieDetails = async () => {
-    this.setState({apiStatus: apiStatusConstants.inProgress})
-    const {match} = this.props
-    const {params} = match
-    const {id} = params
+  const getMovieDetails = async () => {
+    setApiStatus(apiStatusConstants.inProgress)
     const jwtToken = Cookies.get('jwt_token')
     const apiUrl = `https://apis.ccbp.in/movies-app/movies/${id}`
     const options = {
+      method: 'GET',
       headers: {
         Authorization: `Bearer ${jwtToken}`,
       },
-      method: 'GET',
     }
+
     const response = await fetch(apiUrl, options)
-    if (response.ok === true) {
+    if (response.ok) {
       const data = await response.json()
-      const updatedData = [data.movie_details].map(each => ({
-        id: each.id,
-        backdropPath: each.backdrop_path,
-        budget: each.budget,
-        title: each.title,
-        overview: each.overview,
-        originalLanguage: each.original_language,
-        releaseDate: each.release_date,
-        count: each.vote_count,
-        rating: each.vote_average,
-        runtime: each.runtime,
-        posterPath: each.poster_path,
-      }))
-      // console.log(updatedData)
+      const updatedData = {
+        id: data.movie_details.id,
+        backdropPath: data.movie_details.backdrop_path,
+        budget: data.movie_details.budget,
+        title: data.movie_details.title,
+        overview: data.movie_details.overview,
+        originalLanguage: data.movie_details.original_language,
+        releaseDate: data.movie_details.release_date,
+        count: data.movie_details.vote_count,
+        rating: data.movie_details.vote_average,
+        runtime: data.movie_details.runtime,
+        posterPath: data.movie_details.poster_path,
+      }
+
       const genresData = data.movie_details.genres.map(each => ({
         id: each.id,
         name: each.name,
       }))
-      // console.log(genresData)
-      const updatedSimilarData = data.movie_details.similar_movies.map(
-        each => ({
-          id: each.id,
-          posterPath: each.poster_path,
-          title: each.title,
-        }),
-      )
-      // console.log(updatedSimilarData)
-      const updatedLanguagesData = data.movie_details.spoken_languages.map(
-        each => ({
-          id: each.id,
-          language: each.english_name,
-        }),
-      )
-      this.setState({
-        movieDetails: updatedData,
-        genres: genresData,
-        spokenLanguages: updatedLanguagesData,
-        similarMovies: updatedSimilarData.slice(0, 6),
-        apiStatus: apiStatusConstants.success,
-      })
+
+      const languagesData = data.movie_details.spoken_languages.map(each => ({
+        id: each.id,
+        language: each.english_name,
+      }))
+
+      const similarData = data.movie_details.similar_movies.map(each => ({
+        id: each.id,
+        title: each.title,
+        posterPath: each.poster_path,
+      }))
+
+      setMovieDetails([updatedData])
+      setGenres(genresData)
+      setSpokenLanguages(languagesData)
+      setSimilarMovies(similarData.slice(0, 6))
+      setApiStatus(apiStatusConstants.success)
     } else {
-      this.setState({apiStatus: apiStatusConstants.failure})
+      setApiStatus(apiStatusConstants.failure)
     }
   }
 
-  onRetry = () => {
-    this.getMovieDetails()
+  useEffect(() => {
+    getMovieDetails()
+  }, [id])
+
+  const onRetry = () => {
+    getMovieDetails()
   }
 
-  renderFailureView = () => <FailureView onRetry={this.onRetry} />
+  const renderFailureView = () => <FailureView onRetry={onRetry} />
 
-  renderLoadingView = () => (
+  const renderLoadingView = () => (
     <div className="loader-container">
       <Loader
         testid="loader"
         type="TailSpin"
         height={35}
         width={380}
-        color=" #D81F26"
+        color="#D81F26"
       />
     </div>
   )
 
-  renderSuccessView = () => {
-    const {movieDetails, genres, spokenLanguages, similarMovies} = this.state
+  const renderSuccessView = () => {
     const newMovieDetails = {...movieDetails[0]}
     const {releaseDate, count, rating, budget} = newMovieDetails
-    const months = [
-      'January',
-      'February',
-      'March',
-      'April',
-      'May',
-      'June',
-      'July',
-      'August',
-      'September',
-      'October',
-      'November',
-      'December',
-    ]
     const d = new Date(releaseDate)
-    const monthName = months[d.getMonth()]
-    const date = new Date(releaseDate)
-    const year = date.getFullYear()
-    const day = date.getDay().toString()
-    let dateEndingWord
-    if (day.endsWith('1')) {
+    const monthName = d.toLocaleString('default', {month: 'long'})
+    const day = d.getDate()
+    const year = d.getFullYear()
+
+    let dateEndingWord = 'th'
+    if (day === 1) {
       dateEndingWord = 'st'
-    } else if (day.endsWith('2')) {
+    } else if (day === 2) {
       dateEndingWord = 'nd'
-    } else if (day.endsWith('3')) {
+    } else if (day === 3) {
       dateEndingWord = 'rd'
-    } else {
-      dateEndingWord = 'th'
     }
+
     return (
       <>
         <div>
@@ -153,17 +129,17 @@ class MovieItemDetails extends Component {
         <div className="additional-movie-info-container additional-info-sm-container">
           <ul className="each-genre-ul-container">
             <h1 className="movie-info-genre-heading">Genres</h1>
-            {genres.map(eachGenre => (
-              <li className="movie-info-each-genre" key={eachGenre.id}>
-                <p> {eachGenre.name}</p>
+            {genres.map(each => (
+              <li className="movie-info-each-genre" key={each.id}>
+                <p>{each.name}</p>
               </li>
             ))}
           </ul>
           <ul className="each-genre-ul-container">
             <h1 className="movie-info-genre-heading">Audio Available</h1>
-            {spokenLanguages.map(eachAudio => (
-              <li className="movie-info-each-genre" key={eachAudio.id}>
-                <p>{eachAudio.language}</p>
+            {spokenLanguages.map(each => (
+              <li className="movie-info-each-genre" key={each.id}>
+                <p>{each.language}</p>
               </li>
             ))}
           </ul>
@@ -176,21 +152,22 @@ class MovieItemDetails extends Component {
           <div className="each-genre-ul-container">
             <h1 className="movie-info-budget-heading">Budget</h1>
             <p className="movie-info-budget">{budget}</p>
-            <h1 className="movie-info-release-date">Release Date </h1>
+            <h1 className="movie-info-release-date">Release Date</h1>
             <p>
               <span className="movie-info-date">{day}</span>
               <span className="movie-info-date-end">{dateEndingWord}</span>
               <span className="movie-info-month-name">{monthName}</span>
-              <span className=" movie-info-year">{year}</span>
+              <span className="movie-info-year">{year}</span>
             </p>
           </div>
         </div>
+
         <div className="similar-movies-container">
           <h1 className="more-like-this">More like this</h1>
           <ul className="popular-ul-container similar-ul-container">
             {similarMovies.map(each => (
               <Link to={`/movies/${each.id}`} key={each.id} target="blank">
-                <li className="popular-li-item" key={each.id}>
+                <li className="popular-li-item">
                   <img
                     className="popular-poster"
                     src={each.posterPath}
@@ -205,36 +182,33 @@ class MovieItemDetails extends Component {
     )
   }
 
-  renderVideoDetailView = () => {
-    const {apiStatus} = this.state
-
+  const renderMovieDetailSection = () => {
     switch (apiStatus) {
       case apiStatusConstants.success:
-        return this.renderSuccessView()
+        return renderSuccessView()
       case apiStatusConstants.failure:
-        return this.renderFailureView()
+        return renderFailureView()
       case apiStatusConstants.inProgress:
-        return this.renderLoadingView()
+        return renderLoadingView()
       default:
         return null
     }
   }
 
-  render() {
-    return (
-      <div className="dummy" data-tesid="loader">
-        <Header />
-        <div className="root-container">
-          <div
-            className="video-details-view-container"
-            data-testid="videoItemDetails"
-          >
-            {this.renderVideoDetailView()}
-          </div>
-          <p> Contact us</p>
+  return (
+    <div className="dummy" data-testid="loader">
+      <Header />
+      <div className="root-container">
+        <div
+          className="video-details-view-container"
+          data-testid="videoItemDetails"
+        >
+          {renderMovieDetailSection()}
         </div>
+        <p>Contact us</p>
       </div>
-    )
-  }
+    </div>
+  )
 }
-export default MovieItemDetails
+
+export default withRouter(MovieItemDetails)

@@ -16,6 +16,7 @@
     "enzyme": "3.11.0",
     "history": "5.0.1",
     "js-cookie": "3.0.1",
+    "lodash.debounce": "4.0.8",
     "msw": "0.35.0",
     "react": "17.0.1",
     "react-dom": "17.0.1",
@@ -37,8 +38,8 @@
     "react-scripts": "4.0.3"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
+    "start": "set NODE_OPTIONS=--openssl-legacy-provider && react-scripts start",
+    "build": "set NODE_OPTIONS=--openssl-legacy-provider && react-scripts build",
     "test": "react-scripts test",
     "lint": "eslint .",
     "lint:fix": "eslint --fix src/",

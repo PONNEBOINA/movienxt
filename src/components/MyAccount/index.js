@@ -4,8 +4,6 @@ import Footer from '../Footer'
 import './index.css'
 
 const MyAccount = props => {
-  // const passwordInAsterisk = '*'.repeat(password.length)
-
   const onClickLogout = () => {
     const {history} = props
     Cookies.remove('jwt_token')

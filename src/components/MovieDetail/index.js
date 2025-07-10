@@ -9,7 +9,6 @@ const MovieDetail = props => {
     runtime,
     releaseDate,
     overview,
-    // posterPath,
   } = movieDetails
 
   const hours = Math.floor(runtime / 60)

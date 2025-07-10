@@ -1,4 +1,4 @@
-import {Component} from 'react'
+import {useState, useEffect} from 'react'
 import Cookies from 'js-cookie'
 import Loader from 'react-loader-spinner'
 import ReactSlick from '../ReactSlick'
@@ -12,20 +12,12 @@ const apiStatusConstants = {
   inProgress: 'IN_PROGRESS',
 }
 
-class Trending extends Component {
-  state = {
-    trending: [],
-    apiStatus: apiStatusConstants.initial,
-  }
+const Trending = () => {
+  const [trending, setTrending] = useState([])
+  const [apiStatus, setApiStatus] = useState(apiStatusConstants.initial)
 
-  componentDidMount() {
-    this.getTrending()
-  }
-
-  getTrending = async () => {
-    this.setState({
-      apiStatus: apiStatusConstants.inProgress,
-    })
+  const getTrending = async () => {
+    setApiStatus(apiStatusConstants.inProgress)
     const jwtToken = Cookies.get('jwt_token')
     const apiUrl = `https://apis.ccbp.in/movies-app/trending-movies`
     const options = {
@@ -36,70 +28,56 @@ class Trending extends Component {
     }
 
     const response = await fetch(apiUrl, options)
-    if (response.ok === true) {
+    if (response.ok) {
       const data = await response.json()
-      // console.log(data)
       const updatedData = data.results.map(each => ({
         id: each.id,
         posterPath: each.poster_path,
         title: each.title,
       }))
-      // console.log(updatedData)
-      this.setState({
-        trending: updatedData,
-        apiStatus: apiStatusConstants.success,
-      })
+      setTrending(updatedData)
+      setApiStatus(apiStatusConstants.success)
     } else {
-      this.setState({
-        apiStatus: apiStatusConstants.failure,
-      })
+      setApiStatus(apiStatusConstants.failure)
     }
   }
 
-  onRetry = () => {
-    this.getTrending()
-  }
+  useEffect(() => {
+    getTrending()
+  }, [])
 
-  renderFailureView = () => <FailureView onRetry={this.onRetry} />
+  const onRetry = () => getTrending()
 
-  renderLoadingView = () => (
+  const renderFailureView = () => <FailureView onRetry={onRetry} />
+
+  const renderLoadingView = () => (
     <div className="loader-container">
       <Loader
         testid="loader"
         type="TailSpin"
         height={35}
         width={380}
-        color=" #D81F26"
+        color="#D81F26"
       />
     </div>
   )
 
-  renderSuccessView = () => {
-    const {trending} = this.state
-    return (
-      <>
-        <ReactSlick movies={trending} />
-      </>
-    )
-  }
+  const renderSuccessView = () => <ReactSlick movies={trending} />
 
-  renderTrending = () => {
-    const {apiStatus} = this.state
+  const renderTrending = () => {
     switch (apiStatus) {
       case apiStatusConstants.success:
-        return this.renderSuccessView()
+        return renderSuccessView()
       case apiStatusConstants.failure:
-        return this.renderFailureView()
+        return renderFailureView()
       case apiStatusConstants.inProgress:
-        return this.renderLoadingView()
-
+        return renderLoadingView()
       default:
         return null
     }
   }
 
-  render() {
-    return <div className="trending-now-container">{this.renderTrending()}</div>
-  }
+  return <div className="trending-now-container">{renderTrending()}</div>
 }
+
 export default Trending
