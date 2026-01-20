@@ -7,15 +7,46 @@
   padding: 10px;
   justify-content: center;
   background-color: black;
+  gap: 15px;
 }
 .each-img {
   margin: 10px;
+  list-style: none;
+  transition: transform 0.3s ease;
+  cursor: pointer;
+}
+.each-img:hover {
+  transform: scale(1.05) translateY(-5px);
 }
 .image {
   height: 150px;
   width: 150px;
+  border-radius: 8px;
+  object-fit: cover;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+  transition: all 0.3s ease;
+}
+.image:hover {
+  box-shadow: 0 8px 24px rgba(216, 31, 38, 0.5);
 }
 
 .container {
   background-color: black;
+  animation: fadeIn 0.5s ease-in;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@media (min-width: 768px) {
+  .image {
+    height: 200px;
+    width: 200px;
+  }
 }

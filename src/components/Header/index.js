@@ -27,9 +27,18 @@ const Header = ({searchInput}) => {
   }
 
   const onChangeSearchInput = event => {
+    const query = event.target.value
+    if (searchInput) {
+      searchInput(query)
+    }
+  }
+
+  const onKeyDownSearchInput = event => {
     if (event.key === 'Enter') {
       const query = event.target.value.trim()
-      searchInput(query)
+      if (searchInput) {
+        searchInput(query)
+      }
     }
   }
 
@@ -79,8 +88,9 @@ const Header = ({searchInput}) => {
           {showSearchBar && (
             <input
               type="search"
-              onKeyDown={onChangeSearchInput}
-              placeholder="search"
+              onChange={onChangeSearchInput}
+              onKeyDown={onKeyDownSearchInput}
+              placeholder="Search movies..."
               className="search"
             />
           )}

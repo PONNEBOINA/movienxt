@@ -5,6 +5,7 @@ import Loader from 'react-loader-spinner'
 import FailureView from '../FailureView'
 import Header from '../Header'
 import MovieDetail from '../MovieDetail'
+import Footer from '../Footer'
 
 import './index.css'
 
@@ -205,8 +206,8 @@ const MovieItemDetails = props => {
         >
           {renderMovieDetailSection()}
         </div>
-        <p>Contact us</p>
       </div>
+      <Footer />
     </div>
   )
 }

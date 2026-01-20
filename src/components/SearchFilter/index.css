@@ -1,3 +1,14 @@
+.search-filter-page-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: #131313;
+}
+.search-filter-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
 .search-filter-bg-container {
   background-color: #131313;
   min-height: 100vh;
@@ -9,16 +20,69 @@
   justify-content: flex-start;
   align-items: flex-start;
   margin: 0px;
-  padding-left: 55px;
+  padding: 20px 55px;
   text-align: center;
+  gap: 20px;
 }
 .search-filter-li-item {
-  padding: 10px;
+  list-style: none;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  position: relative;
+}
+.search-filter-li-item:hover {
+  transform: translateY(-8px) scale(1.05);
 }
 .search-poster {
   height: 250px;
   width: 180px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+  transition: all 0.3s ease;
+  object-fit: cover;
+}
+.search-poster:hover {
+  box-shadow: 0 8px 24px rgba(216, 31, 38, 0.4);
+}
+.movie-preview-tooltip {
+  position: absolute;
+  bottom: -40px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.95);
+  padding: 8px 16px;
   border-radius: 8px;
+  white-space: nowrap;
+  z-index: 10;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
+  animation: fadeIn 0.3s ease;
+}
+.movie-preview-tooltip::before {
+  content: '';
+  position: absolute;
+  top: -6px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  border-bottom: 6px solid rgba(0, 0, 0, 0.95);
+}
+.movie-preview-title {
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 500;
+  margin: 0;
+}
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
 }
 @media screen and (max-width: 568px) {
   .search-poster {
@@ -34,6 +98,8 @@
     justify-content: center;
     align-items: center;
     margin: auto;
+    flex: 1;
+    min-height: 60vh;
   }
   .search-not-found-heading {
     margin-top: 30px;
@@ -46,19 +112,25 @@
   }
   .search-not-found-image {
     margin-top: 30px;
+    width: 250px;
+    opacity: 0.8;
   }
 }
 @media screen and (max-width: 768px) {
   .search-not-found-image {
     height: 200px;
-    margin-top: 200px;
+    margin-top: 100px;
     margin-bottom: 10px;
+    opacity: 0.8;
   }
   .search-heading-container {
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    flex: 1;
+    min-height: 60vh;
+    padding: 20px;
   }
   .search-not-found-heading {
     font-style: normal;
@@ -77,11 +149,83 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  margin: auto 0px;
-  min-height: 70vh;
+  flex: 1;
+  min-height: 60vh;
+  padding: 40px 20px;
+}
+.search-instruction-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  max-width: 600px;
+  padding: 40px 20px;
+  animation: fadeInUp 0.6s ease-out;
+}
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.search-instruction-image {
+  width: 180px;
+  height: auto;
+  margin-bottom: 30px;
+  opacity: 0.7;
+  animation: float 3s ease-in-out infinite;
+}
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+.search-instruction-heading {
+  color: #ffffff;
+  font-size: 28px;
+  font-weight: 600;
+  margin-bottom: 16px;
+  text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.8);
+}
+.search-instruction-text {
+  color: #ffffff;
+  font-size: 18px;
+  font-weight: 400;
+  opacity: 0.8;
+  line-height: 1.6;
 }
 .empty-text {
   color: #ffffff;
+  font-size: 18px;
+  font-weight: 400;
+  opacity: 0.8;
+}
+.loader-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex: 1;
+  min-height: 60vh;
+}
+@media screen and (max-width: 576px) {
+  .search-instruction-image {
+    width: 120px;
+    margin-bottom: 20px;
+  }
+  .search-instruction-heading {
+    font-size: 22px;
+    margin-bottom: 12px;
+  }
+  .search-instruction-text {
+    font-size: 16px;
+  }
 }
 @media screen and (max-width: 568px) {
   .search-filter-initial-no-search {

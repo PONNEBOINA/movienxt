@@ -72,9 +72,20 @@
   }
 }
 .nav-container {
-  background-color: #13131330;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.8) 0%, rgba(19, 19, 19, 0.4) 100%);
   min-height: 75px;
-  padding: 15px;
+  padding: 15px 30px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  backdrop-filter: blur(10px);
+}
+.app-logo {
+  height: 40px;
+  transition: transform 0.3s ease;
+}
+.app-logo:hover {
+  transform: scale(1.05);
 }
 .nav-elements-container {
   display: flex;
@@ -86,10 +97,14 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  gap: 10px;
 }
 @media screen and (max-width: 767px) {
   .nav-list-items {
     display: none;
+  }
+  .nav-container {
+    padding: 15px 20px;
   }
 }
 
@@ -97,6 +112,21 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  background: rgba(0, 0, 0, 0.95);
+  padding: 20px;
+  border-radius: 8px;
+  margin-top: 10px;
+  animation: slideDown 0.3s ease;
+}
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .profile-logo {
@@ -132,12 +162,26 @@
 
 .active {
   color: #ffffff;
-  font-weight: 800;
-  border-bottom: 2px solid blue;
+  font-weight: 700;
+  position: relative;
+}
+.active::after {
+  content: '';
+  position: absolute;
+  bottom: -5px;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #D81F26 0%, #ff4757 100%);
+  border-radius: 2px;
 }
 
 .passive {
   color: #ffffff90;
+  transition: color 0.3s ease;
+}
+.passive:hover {
+  color: #ffffff;
 }
 
 .nav-link {
@@ -146,17 +190,36 @@
 }
 .search {
   size: 20px;
-  background-color: #131313;
-  border-width: 2px 1px 0.5px 1px;
-  border-color: grey;
+  background-color: #1a1a1a;
+  border: 2px solid #404040;
+  border-radius: 6px;
   margin-right: 8px;
-  width: 125px;
+  width: 200px;
+  padding: 8px 12px;
   color: white;
+  font-size: 14px;
+  outline: none;
+  transition: all 0.3s ease;
+}
+.search:focus {
+  border-color: #D81F26;
+  background-color: #202020;
+  box-shadow: 0 0 8px rgba(216, 31, 38, 0.3);
+}
+.search::placeholder {
+  color: #808080;
 }
 .search-container {
   display: flex;
   align-items: center;
   justify-content: flex-end;
+}
+@media screen and (max-width: 767px) {
+  .search {
+    width: 150px;
+    padding: 6px 10px;
+    font-size: 13px;
+  }
 }
 
 .search-icon {
@@ -177,6 +240,11 @@
   border-width: 0;
   padding-top: 5px;
   margin-top: 4px;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+.icon-button:hover {
+  transform: scale(1.1);
 }
 
 .popup-heading {

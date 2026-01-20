@@ -1,4 +1,4 @@
-import {useState, useEffect, useCallback} from 'react'
+import {useState, useCallback} from 'react'
 import {Link} from 'react-router-dom'
 import Cookies from 'js-cookie'
 import Loader from 'react-loader-spinner'
@@ -21,6 +21,7 @@ const SearchFilter = () => {
   const [searchValue, setSearchValue] = useState('')
   const [searchMovies, setSearchMovies] = useState([])
   const [apiStatus, setApiStatus] = useState(apiStatusConstants.initial)
+  const [hoveredMovie, setHoveredMovie] = useState(null)
 
   const getSearchMovies = async value => {
     if (value.trim() === '') {
@@ -60,7 +61,7 @@ const SearchFilter = () => {
   const debouncedSearch = useCallback(
     debounce(value => {
       getSearchMovies(value)
-    }, 500),
+    }, 300),
     [],
   )
 
@@ -77,7 +78,7 @@ const SearchFilter = () => {
 
   const renderLoadingView = () => (
     <div className="loader-container" data-testid="loader">
-      <Loader type="TailSpin" height={35} width={380} color=" #D81F26" />
+      <Loader type="TailSpin" height={50} width={50} color="#D81F26" />
     </div>
   )
 
@@ -101,12 +102,21 @@ const SearchFilter = () => {
         <ul className="search-filter-ul-container">
           {searchMovies.map(each => (
             <Link to={`/movies/${each.id}`} key={each.id}>
-              <li className="search-filter-li-item">
+              <li
+                className="search-filter-li-item"
+                onMouseEnter={() => setHoveredMovie(each.id)}
+                onMouseLeave={() => setHoveredMovie(null)}
+              >
                 <img
                   className="search-poster"
                   src={each.posterPath}
                   alt={each.title}
                 />
+                {hoveredMovie === each.id && (
+                  <div className="movie-preview-tooltip">
+                    <p className="movie-preview-title">{each.title}</p>
+                  </div>
+                )}
               </li>
             </Link>
           ))}
@@ -120,9 +130,19 @@ const SearchFilter = () => {
     if (isEmpty) {
       return (
         <div className="search-filter-initial-no-search">
-          <p className="empty-text">
-            Search the movie by typing in the search bar
-          </p>
+          <div className="search-instruction-container">
+            <img
+              src="https://res.cloudinary.com/dyx9u0bif/image/upload/v1657092588/Group_7394_jzwy1v.png"
+              alt="search movies"
+              className="search-instruction-image"
+            />
+            <h1 className="search-instruction-heading">
+              Search for Your Favorite Movies
+            </h1>
+            <p className="search-instruction-text">
+              Start typing in the search bar above to discover movies
+            </p>
+          </div>
         </div>
       )
     }
@@ -146,9 +166,11 @@ const SearchFilter = () => {
   }
 
   return (
-    <div className="search-filter-bg-container">
+    <div className="search-filter-page-container">
       <Header searchInput={handleSearchInput} />
-      {renderSearchResults()}
+      <div className="search-filter-content">
+        {renderSearchResults()}
+      </div>
       <Footer />
     </div>
   )

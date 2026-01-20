@@ -11,17 +11,28 @@
   margin-top: 30px;
   padding: 30px;
   background-color: black;
+  gap: 10px;
 }
 .icon-button {
   outline: none;
   border: none;
   cursor: pointer;
   margin: 5px;
-  padding: 5px;
+  padding: 10px;
   padding-bottom: 0;
   margin-bottom: 0;
   color: #ffffff;
   background-color: transparent;
+  font-size: 24px;
+  transition: all 0.3s ease;
+  position: relative;
+}
+.icon-button:hover {
+  color: #D81F26;
+  transform: translateY(-3px) scale(1.2);
+}
+.icon-button:active {
+  transform: translateY(-1px) scale(1.1);
 }
 .contact-us-footer {
   font-family: 'HK Grotesk';
@@ -33,4 +44,5 @@
   text-align: center;
   margin-top: -20px;
   padding-bottom: 20px;
+  opacity: 0.8;
 }
