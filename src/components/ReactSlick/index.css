@@ -17,6 +17,25 @@
   margin: 0;
   list-style: none;
   transition: transform 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.slick-movie-container {
+  position: relative;
+}
+
+.slick-movie-container:hover .slick-movie-img {
+  transform: scale(1.05);
+}
+
+/* Remove old overlay styles since we're using inline previews now */
+.movie-overlay {
+  display: none;
+}
+
+.trailer-btn {
+  display: none;
 }
 .slick-app-container {
   display: flex;
@@ -70,5 +89,34 @@
     height: 200px;
     width: 200px;
     border-radius: 10px;
+  }
+}
+@media (min-width: 567px) {
+  .movie-overlay {
+    margin: 0px 5px;
+  }
+  
+  .trailer-btn {
+    width: 50px;
+    height: 50px;
+    font-size: 16px;
+  }
+}
+
+@media (min-width: 768px) {
+  .movie-overlay {
+    margin: 0px 15px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .movie-overlay {
+    margin: 0px 30px;
+  }
+  
+  .trailer-btn {
+    width: 60px;
+    height: 60px;
+    font-size: 20px;
   }
 }

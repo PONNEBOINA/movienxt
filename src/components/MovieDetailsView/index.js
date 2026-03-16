@@ -2,10 +2,15 @@ import {useEffect, useState} from 'react'
 import {withRouter, Link} from 'react-router-dom'
 import Cookies from 'js-cookie'
 import Loader from 'react-loader-spinner'
+import {FaPlay} from 'react-icons/fa'
 import FailureView from '../FailureView'
 import Header from '../Header'
 import MovieDetail from '../MovieDetail'
 import Footer from '../Footer'
+import TrailerModal from '../TrailerModal'
+import InlineTrailerPreview from '../InlineTrailerPreview'
+import useTrailerPreview from '../../hooks/useTrailerPreview'
+import {openTrailerInModal} from '../../utils/trailerUtils'
 
 import './index.css'
 
@@ -16,12 +21,68 @@ const apiStatusConstants = {
   inProgress: 'IN_PROGRESS',
 }
 
+const SimilarMovieCard = ({movie}) => {
+  const {
+    trailerKey,
+    showPreview,
+    handleMouseEnter,
+    handleMouseLeave
+  } = useTrailerPreview(movie, 800)
+
+  const [showFullTrailer, setShowFullTrailer] = useState(false)
+
+  const handleExpandTrailer = (trailerKey, title) => {
+    setShowFullTrailer(true)
+  }
+
+  const handleCloseFullTrailer = () => {
+    setShowFullTrailer(false)
+  }
+
+  return (
+    <>
+      <li 
+        className="popular-li-item"
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
+      >
+        <Link to={`/movies/${movie.id}`} target="_blank">
+          <img
+            className="popular-poster"
+            src={movie.posterPath}
+            alt={movie.title}
+          />
+        </Link>
+        
+        <InlineTrailerPreview
+          trailerKey={trailerKey}
+          movieTitle={movie.title}
+          isVisible={showPreview}
+          onExpand={handleExpandTrailer}
+          autoPlay={true}
+          showControls={true}
+        />
+      </li>
+      
+      {showFullTrailer && (
+        <TrailerModal
+          videoKey={trailerKey}
+          onClose={handleCloseFullTrailer}
+          title={movie.title}
+        />
+      )}
+    </>
+  )
+}
+
 const MovieItemDetails = props => {
   const [apiStatus, setApiStatus] = useState(apiStatusConstants.initial)
   const [movieDetails, setMovieDetails] = useState([])
   const [genres, setGenres] = useState([])
   const [spokenLanguages, setSpokenLanguages] = useState([])
   const [similarMovies, setSimilarMovies] = useState([])
+  const [showTrailer, setShowTrailer] = useState(false)
+  const [trailerKey, setTrailerKey] = useState('')
 
   const {match} = props
   const {params} = match
@@ -53,6 +114,7 @@ const MovieItemDetails = props => {
         rating: data.movie_details.vote_average,
         runtime: data.movie_details.runtime,
         posterPath: data.movie_details.poster_path,
+        trailerKey: data.movie_details.trailer_key || null,
       }
 
       const genresData = data.movie_details.genres.map(each => ({
@@ -84,6 +146,37 @@ const MovieItemDetails = props => {
   useEffect(() => {
     getMovieDetails()
   }, [id])
+
+  const handlePlayTrailer = async () => {
+    const movie = movieDetails[0]
+    
+    // Show loading state
+    setApiStatus(apiStatusConstants.inProgress)
+    
+    try {
+      await openTrailerInModal(
+        movie?.title,
+        movie?.trailerKey,
+        (trailerKey, title) => {
+          setTrailerKey(trailerKey)
+          setShowTrailer(true)
+          setApiStatus(apiStatusConstants.success)
+        },
+        movie?.id,
+        movie?.releaseDate ? new Date(movie.releaseDate).getFullYear() : null
+      )
+    } catch (error) {
+      console.error('Error loading trailer:', error)
+      setApiStatus(apiStatusConstants.success)
+      // Show no trailer available message
+      alert('Sorry, no trailer is available for this movie.')
+    }
+  }
+
+  const handleCloseTrailer = () => {
+    setShowTrailer(false)
+    setTrailerKey('')
+  }
 
   const onRetry = () => {
     getMovieDetails()
@@ -124,10 +217,24 @@ const MovieItemDetails = props => {
       <>
         <div>
           {movieDetails.map(each => (
-            <MovieDetail movieDetails={each} key={each.id} />
+            <MovieDetail 
+              movieDetails={each} 
+              key={each.id} 
+              onPlayTrailer={handlePlayTrailer}
+            />
           ))}
         </div>
         <div className="additional-movie-info-container additional-info-sm-container">
+          <div className="trailer-section">
+            <button
+              className="watch-trailer-btn"
+              onClick={handlePlayTrailer}
+              type="button"
+            >
+              <FaPlay className="play-icon" />
+              Watch Trailer
+            </button>
+          </div>
           <ul className="each-genre-ul-container">
             <h1 className="movie-info-genre-heading">Genres</h1>
             {genres.map(each => (
@@ -166,16 +273,8 @@ const MovieItemDetails = props => {
         <div className="similar-movies-container">
           <h1 className="more-like-this">More like this</h1>
           <ul className="popular-ul-container similar-ul-container">
-            {similarMovies.map(each => (
-              <Link to={`/movies/${each.id}`} key={each.id} target="blank">
-                <li className="popular-li-item">
-                  <img
-                    className="popular-poster"
-                    src={each.posterPath}
-                    alt={each.title}
-                  />
-                </li>
-              </Link>
+            {similarMovies.map(movie => (
+              <SimilarMovieCard key={movie.id} movie={movie} />
             ))}
           </ul>
         </div>
@@ -208,6 +307,13 @@ const MovieItemDetails = props => {
         </div>
       </div>
       <Footer />
+      {showTrailer && (
+        <TrailerModal
+          videoKey={trailerKey}
+          onClose={handleCloseTrailer}
+          title={movieDetails[0]?.title}
+        />
+      )}
     </div>
   )
 }

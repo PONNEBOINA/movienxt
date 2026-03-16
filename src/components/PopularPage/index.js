@@ -2,6 +2,11 @@ import {useState, useEffect} from 'react'
 import Loader from 'react-loader-spinner'
 import Cookies from 'js-cookie'
 import {Link} from 'react-router-dom'
+import {FaPlay} from 'react-icons/fa'
+import TrailerModal from '../TrailerModal'
+import InlineTrailerPreview from '../InlineTrailerPreview'
+import useTrailerPreview from '../../hooks/useTrailerPreview'
+import {openTrailerInModal} from '../../utils/trailerUtils'
 
 import FailureView from '../FailureView'
 import Footer from '../Footer'
@@ -14,6 +19,56 @@ const apiStatusContext = {
   success: 'SUCCESS',
   failure: 'FAILURE',
   inProgress: 'IN_PROGRESS',
+}
+
+const MovieCard = ({movie}) => {
+  const {
+    trailerKey,
+    showPreview,
+    handleMouseEnter,
+    handleMouseLeave
+  } = useTrailerPreview(movie, 800)
+
+  const [showFullTrailer, setShowFullTrailer] = useState(false)
+
+  const handleExpandTrailer = (trailerKey, title) => {
+    setShowFullTrailer(true)
+  }
+
+  const handleCloseFullTrailer = () => {
+    setShowFullTrailer(false)
+  }
+
+  return (
+    <>
+      <li 
+        className="each-img"
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
+      >
+        <Link to={`/movies/${movie.id}`}>
+          <img src={movie.posterPath} alt={movie.title} className="image" />
+        </Link>
+        
+        <InlineTrailerPreview
+          trailerKey={trailerKey}
+          movieTitle={movie.title}
+          isVisible={showPreview}
+          onExpand={handleExpandTrailer}
+          autoPlay={true}
+          showControls={true}
+        />
+      </li>
+      
+      {showFullTrailer && (
+        <TrailerModal
+          videoKey={trailerKey}
+          onClose={handleCloseFullTrailer}
+          title={movie.title}
+        />
+      )}
+    </>
+  )
 }
 
 const PopularPage = () => {
@@ -56,17 +111,40 @@ const PopularPage = () => {
     fetchPopularMovies()
   }
 
+  const handleTrailerClick = async (e, movie) => {
+    e.preventDefault()
+    e.stopPropagation()
+    
+    try {
+      await openTrailerInModal(
+        movie.title,
+        movie.trailerKey,
+        (trailerKey, title) => {
+          setTrailerKey(trailerKey)
+          setCurrentMovieTitle(title)
+          setShowTrailer(true)
+        },
+        movie.id
+      )
+    } catch (error) {
+      console.error('Error loading trailer:', error)
+      alert('Sorry, no trailer is available for this movie.')
+    }
+  }
+
+  const handleCloseTrailer = () => {
+    setShowTrailer(false)
+    setTrailerKey('')
+    setCurrentMovieTitle('')
+  }
+
   const renderSuccessView = () => {
     const fewMovies = popularMovies.slice(0, 26)
     return (
       <div data-testid="loader">
         <ul className="img-container">
-          {fewMovies.map(each => (
-            <Link to={`/movies/${each.id}`} key={each.id}>
-              <li className="each-img">
-                <img src={each.posterPath} alt={each.title} className="image" />
-              </li>
-            </Link>
+          {fewMovies.map(movie => (
+            <MovieCard key={movie.id} movie={movie} />
           ))}
         </ul>
       </div>

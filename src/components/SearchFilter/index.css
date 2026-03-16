@@ -28,6 +28,7 @@
   list-style: none;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   position: relative;
+  overflow: hidden;
 }
 .search-filter-li-item:hover {
   transform: translateY(-8px) scale(1.05);
@@ -231,4 +232,37 @@
   .search-filter-initial-no-search {
     text-align: center;
   }
+}
+.movie-preview-tooltip {
+  position: absolute;
+  bottom: -40px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.95);
+  padding: 8px 16px;
+  border-radius: 8px;
+  white-space: nowrap;
+  z-index: 10;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
+  animation: fadeIn 0.3s ease;
+}
+
+.movie-preview-tooltip::before {
+  content: '';
+  position: absolute;
+  top: -6px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  border-bottom: 6px solid rgba(0, 0, 0, 0.95);
+}
+
+.movie-preview-title {
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 500;
+  margin: 0;
 }

@@ -1,5 +1,10 @@
+import {useState} from 'react'
 import {Link} from 'react-router-dom'
 import Slider from 'react-slick'
+import {FaPlay} from 'react-icons/fa'
+import TrailerModal from '../TrailerModal'
+import InlineTrailerPreview from '../InlineTrailerPreview'
+import useTrailerPreview from '../../hooks/useTrailerPreview'
 
 import 'slick-carousel/slick/slick.css'
 import 'slick-carousel/slick/slick-theme.css'
@@ -37,24 +42,74 @@ const settings = {
   ],
 }
 
-const ReactSlick = ({movies}) => (
-  <div className="slick-app-container">
-    <div style={{width: '95%'}}>
-      <Slider {...settings}>
-        {movies.map(each => (
-          <Link to={`/movies/${each.id}`} key={each.id}>
-            <li className="react-slick-li-item" key={each.id}>
-              <img
-                className="slick-movie-img"
-                src={each.posterPath}
-                alt={each.title}
-              />
-            </li>
-          </Link>
-        ))}
-      </Slider>
+const MovieCard = ({movie}) => {
+  const {
+    trailerKey,
+    showPreview,
+    handleMouseEnter,
+    handleMouseLeave
+  } = useTrailerPreview(movie, 800) // 800ms hover delay
+
+  const [showFullTrailer, setShowFullTrailer] = useState(false)
+
+  const handleExpandTrailer = (trailerKey, title) => {
+    setShowFullTrailer(true)
+  }
+
+  const handleCloseFullTrailer = () => {
+    setShowFullTrailer(false)
+  }
+
+  return (
+    <>
+      <div className="slick-movie-container">
+        <Link to={`/movies/${movie.id}`}>
+          <li 
+            className="react-slick-li-item" 
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
+          >
+            <img
+              className="slick-movie-img"
+              src={movie.posterPath}
+              alt={movie.title}
+            />
+            
+            <InlineTrailerPreview
+              trailerKey={trailerKey}
+              movieTitle={movie.title}
+              isVisible={showPreview}
+              onExpand={handleExpandTrailer}
+              autoPlay={true}
+              showControls={true}
+            />
+          </li>
+        </Link>
+      </div>
+      
+      {showFullTrailer && (
+        <TrailerModal
+          videoKey={trailerKey}
+          onClose={handleCloseFullTrailer}
+          title={movie.title}
+        />
+      )}
+    </>
+  )
+}
+
+const ReactSlick = ({movies}) => {
+  return (
+    <div className="slick-app-container">
+      <div style={{width: '95%'}}>
+        <Slider {...settings}>
+          {movies.map(movie => (
+            <MovieCard key={movie.id} movie={movie} />
+          ))}
+        </Slider>
+      </div>
     </div>
-  </div>
-)
+  )
+}
 
 export default ReactSlick

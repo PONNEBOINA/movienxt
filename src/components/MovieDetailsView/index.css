@@ -213,3 +213,97 @@ li {
     margin-bottom: 30px;
   }
 }
+/* Trailer Section */
+.trailer-section {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px 0;
+  margin-bottom: 20px;
+}
+
+.watch-trailer-btn {
+  background: linear-gradient(135deg, #d81f26, #b71c1c);
+  border: none;
+  border-radius: 50px;
+  padding: 15px 30px;
+  color: white;
+  font-size: 18px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(216, 31, 38, 0.3);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.watch-trailer-btn:hover {
+  background: linear-gradient(135deg, #b71c1c, #d81f26);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(216, 31, 38, 0.5);
+}
+
+.watch-trailer-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 10px rgba(216, 31, 38, 0.4);
+}
+
+.play-icon {
+  font-size: 16px;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@media screen and (max-width: 767px) {
+  .watch-trailer-btn {
+    padding: 12px 24px;
+    font-size: 16px;
+  }
+  
+  .play-icon {
+    font-size: 14px;
+  }
+}
+/* Similar Movies Inline Preview Styles */
+.popular-li-item {
+  position: relative;
+  overflow: hidden;
+  border-radius: 8px;
+}
+
+.popular-li-item .inline-trailer-preview {
+  border-radius: 8px;
+}
+
+.popular-li-item .trailer-controls {
+  bottom: 8px;
+  right: 8px;
+}
+
+.popular-li-item .trailer-control-btn {
+  width: 30px;
+  height: 30px;
+  font-size: 12px;
+}
+
+@media screen and (max-width: 767px) {
+  .popular-li-item .trailer-control-btn {
+    width: 25px;
+    height: 25px;
+    font-size: 10px;
+  }
+}

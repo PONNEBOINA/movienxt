@@ -1,7 +1,7 @@
 import './index.css'
 
 const HomePoster = props => {
-  const {poster} = props
+  const {poster, onPlayTrailer} = props
   const {backdropPath, title, overview} = poster
   const cutText =
     overview.length > 200 ? `${overview.slice(0, 190)}....` : overview
@@ -24,6 +24,7 @@ const HomePoster = props => {
             className=" movies-details-play-button  home-poster-play-btn"
             type="button"
             data-testid="searchButton"
+            onClick={onPlayTrailer}
           >
             Play
           </button>

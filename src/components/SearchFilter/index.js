@@ -3,6 +3,11 @@ import {Link} from 'react-router-dom'
 import Cookies from 'js-cookie'
 import Loader from 'react-loader-spinner'
 import debounce from 'lodash.debounce'
+import {FaPlay} from 'react-icons/fa'
+import TrailerModal from '../TrailerModal'
+import InlineTrailerPreview from '../InlineTrailerPreview'
+import useTrailerPreview from '../../hooks/useTrailerPreview'
+import {openTrailerInModal} from '../../utils/trailerUtils'
 
 import Header from '../Header'
 import FailureView from '../FailureView'
@@ -17,11 +22,70 @@ const apiStatusConstants = {
   inProgress: 'IN_PROGRESS',
 }
 
+const SearchMovieCard = ({movie}) => {
+  const {
+    trailerKey,
+    showPreview,
+    handleMouseEnter,
+    handleMouseLeave
+  } = useTrailerPreview(movie, 800)
+
+  const [showFullTrailer, setShowFullTrailer] = useState(false)
+
+  const handleExpandTrailer = (trailerKey, title) => {
+    setShowFullTrailer(true)
+  }
+
+  const handleCloseFullTrailer = () => {
+    setShowFullTrailer(false)
+  }
+
+  return (
+    <>
+      <li
+        className="search-filter-li-item"
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
+      >
+        <Link to={`/movies/${movie.id}`}>
+          <img
+            className="search-poster"
+            src={movie.posterPath}
+            alt={movie.title}
+          />
+        </Link>
+        
+        <InlineTrailerPreview
+          trailerKey={trailerKey}
+          movieTitle={movie.title}
+          isVisible={showPreview}
+          onExpand={handleExpandTrailer}
+          autoPlay={true}
+          showControls={true}
+        />
+        
+        {showPreview && (
+          <div className="movie-preview-tooltip">
+            <p className="movie-preview-title">{movie.title}</p>
+          </div>
+        )}
+      </li>
+      
+      {showFullTrailer && (
+        <TrailerModal
+          videoKey={trailerKey}
+          onClose={handleCloseFullTrailer}
+          title={movie.title}
+        />
+      )}
+    </>
+  )
+}
+
 const SearchFilter = () => {
   const [searchValue, setSearchValue] = useState('')
   const [searchMovies, setSearchMovies] = useState([])
   const [apiStatus, setApiStatus] = useState(apiStatusConstants.initial)
-  const [hoveredMovie, setHoveredMovie] = useState(null)
 
   const getSearchMovies = async value => {
     if (value.trim() === '') {
@@ -74,6 +138,33 @@ const SearchFilter = () => {
     getSearchMovies(searchValue)
   }
 
+  const handleTrailerClick = async (e, movie) => {
+    e.preventDefault()
+    e.stopPropagation()
+    
+    try {
+      await openTrailerInModal(
+        movie.title,
+        movie.trailerKey,
+        (trailerKey, title) => {
+          setTrailerKey(trailerKey)
+          setCurrentMovieTitle(title)
+          setShowTrailer(true)
+        },
+        movie.id
+      )
+    } catch (error) {
+      console.error('Error loading trailer:', error)
+      alert('Sorry, no trailer is available for this movie.')
+    }
+  }
+
+  const handleCloseTrailer = () => {
+    setShowTrailer(false)
+    setTrailerKey('')
+    setCurrentMovieTitle('')
+  }
+
   const renderFailureView = () => <FailureView onRetry={onRetry} />
 
   const renderLoadingView = () => (
@@ -100,25 +191,8 @@ const SearchFilter = () => {
     <div className="search-filter-bg-container">
       <div className="search-filter-movies-list-container">
         <ul className="search-filter-ul-container">
-          {searchMovies.map(each => (
-            <Link to={`/movies/${each.id}`} key={each.id}>
-              <li
-                className="search-filter-li-item"
-                onMouseEnter={() => setHoveredMovie(each.id)}
-                onMouseLeave={() => setHoveredMovie(null)}
-              >
-                <img
-                  className="search-poster"
-                  src={each.posterPath}
-                  alt={each.title}
-                />
-                {hoveredMovie === each.id && (
-                  <div className="movie-preview-tooltip">
-                    <p className="movie-preview-title">{each.title}</p>
-                  </div>
-                )}
-              </li>
-            </Link>
+          {searchMovies.map(movie => (
+            <SearchMovieCard key={movie.id} movie={movie} />
           ))}
         </ul>
       </div>

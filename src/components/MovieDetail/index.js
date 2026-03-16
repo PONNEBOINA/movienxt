@@ -1,7 +1,7 @@
 import './index.css'
 
 const MovieDetail = props => {
-  const {movieDetails} = props
+  const {movieDetails, onPlayTrailer} = props
   const {
     backdropPath,
     title,
@@ -35,7 +35,11 @@ const MovieDetail = props => {
         </div>
 
         <p className="home-poster-overview">{overview}</p>
-        <button className="home-poster-play-btn" type="button">
+        <button 
+          className="home-poster-play-btn" 
+          type="button"
+          onClick={onPlayTrailer}
+        >
           Play
         </button>
       </div>

@@ -9,6 +9,9 @@ import FailureView from '../FailureView'
 import Trending from '../TrendingView'
 import Originals from '../Originals'
 import Footer from '../Footer'
+import TrailerModal from '../TrailerModal'
+import InlineTrailerPreview from '../InlineTrailerPreview'
+import useTrailerPreview from '../../hooks/useTrailerPreview'
 
 const apiStatusConstants = {
   initial: 'INITIAL',
@@ -20,6 +23,15 @@ const apiStatusConstants = {
 const Home = () => {
   const [initialPoster, setInitialPoster] = useState({})
   const [apiStatus, setApiStatus] = useState(apiStatusConstants.initial)
+  const [showFullTrailer, setShowFullTrailer] = useState(false)
+  const [isHovered, setIsHovered] = useState(false)
+  
+  const {
+    trailerKey,
+    showPreview,
+    handleMouseEnter,
+    handleMouseLeave
+  } = useTrailerPreview(initialPoster, 1000)
 
   const getHomePagePoster = async () => {
     setApiStatus(apiStatusConstants.inProgress)
@@ -60,6 +72,20 @@ const Home = () => {
     getHomePagePoster()
   }, [])
 
+  const handlePlayTrailer = () => {
+    if (trailerKey) {
+      setShowFullTrailer(true)
+    }
+  }
+
+  const handleExpandTrailer = (trailerKey, title) => {
+    setShowFullTrailer(true)
+  }
+
+  const handleCloseTrailer = () => {
+    setShowFullTrailer(false)
+  }
+
   const onRetry = () => {
     getHomePagePoster()
   }
@@ -79,9 +105,21 @@ const Home = () => {
   )
 
   const renderSuccessView = () => (
-    <>
-      <HomePoster poster={initialPoster} />
-    </>
+    <div 
+      className="home-poster-container"
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+    >
+      <HomePoster poster={initialPoster} onPlayTrailer={handlePlayTrailer} />
+      <InlineTrailerPreview
+        trailerKey={trailerKey}
+        movieTitle={initialPoster?.title}
+        isVisible={showPreview}
+        onExpand={handleExpandTrailer}
+        autoPlay={true}
+        showControls={true}
+      />
+    </div>
   )
 
   const renderHomePoster = () => {
@@ -112,6 +150,13 @@ const Home = () => {
         </div>
       </div>
       <Footer />
+      {showFullTrailer && (
+        <TrailerModal
+          videoKey={trailerKey}
+          onClose={handleCloseTrailer}
+          title={initialPoster?.title}
+        />
+      )}
     </div>
   )
 }

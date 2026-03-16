@@ -100,3 +100,35 @@
     padding-left: 16px;
   }
 }
+.home-poster-container {
+  position: relative;
+  overflow: hidden;
+}
+
+.home-poster-container .inline-trailer-preview {
+  border-radius: 0;
+}
+
+.home-poster-container .trailer-controls {
+  bottom: 20px;
+  right: 20px;
+}
+
+.home-poster-container .trailer-control-btn {
+  width: 40px;
+  height: 40px;
+  font-size: 16px;
+}
+
+@media screen and (max-width: 768px) {
+  .home-poster-container .trailer-controls {
+    bottom: 15px;
+    right: 15px;
+  }
+  
+  .home-poster-container .trailer-control-btn {
+    width: 35px;
+    height: 35px;
+    font-size: 14px;
+  }
+}

@@ -9,15 +9,20 @@
   background-color: black;
   gap: 15px;
 }
+
 .each-img {
   margin: 10px;
   list-style: none;
   transition: transform 0.3s ease;
   cursor: pointer;
+  position: relative;
+  overflow: hidden;
 }
+
 .each-img:hover {
   transform: scale(1.05) translateY(-5px);
 }
+
 .image {
   height: 150px;
   width: 150px;
@@ -26,6 +31,7 @@
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
   transition: all 0.3s ease;
 }
+
 .image:hover {
   box-shadow: 0 8px 24px rgba(216, 31, 38, 0.5);
 }
