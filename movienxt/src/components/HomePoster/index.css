@@ -1,0 +1,209 @@
+@media screen and (min-width: 768px) {
+  .sm-devices {
+    display: none;
+  }
+}
+.lg-devices {
+  visibility: hidden;
+}
+@media screen and (min-width: 768px) {
+  .lg-devices {
+    visibility: visible;
+  }
+}
+.home-poster-title {
+  font-family: 'HK Grotesk';
+  font-style: normal;
+  font-weight: 500;
+  line-height: 46.91px;
+  color: #ffffff;
+  text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.8);
+}
+
+.home-poster-overview {
+  font-family: 'HK Grotesk';
+  font-style: normal;
+  font-weight: 500;
+  font-size: 20px;
+  line-height: 28px;
+  margin-top: 30px;
+  color: #ffffff;
+  text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.8);
+  max-width: 800px;
+}
+.heading-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 40px;
+  background: linear-gradient(to right, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0.4) 50%, transparent 100%);
+}
+.home-poster-play-btn {
+  background: #ffffff;
+  border-radius: 6px;
+  width: 90px;
+  height: 40px;
+  outline: none;
+  border: none;
+  margin-top: 20px;
+  font-weight: 600;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+.home-poster-play-btn:hover {
+  background: #D81F26;
+  color: #ffffff;
+  transform: scale(1.05);
+  box-shadow: 0 6px 12px rgba(216, 31, 38, 0.4);
+}
+@media screen and (min-width: 768px) {
+  .home-poster-title {
+    font-size: 64px;
+    font-weight: 700;
+    line-height: 72px;
+  }
+  .home-poster-overview {
+    font-weight: 400;
+    font-size: 22px;
+    line-height: 32px;
+    margin-top: 30px;
+  }
+  .home-poster-play-btn {
+    width: 110px;
+    height: 48px;
+    margin-top: 30px;
+    font-size: 18px;
+  }
+}
+.devices-container {
+  width: 100%;
+  background-size: cover;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+  min-height: 800px;
+  position: relative;
+}
+.devices-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(to top, rgba(19, 19, 19, 0.9) 0%, transparent 50%);
+  pointer-events: none;
+}
+@media screen and (max-height: 768px) {
+  .devices-container {
+    min-height: 300px;
+    height: 380px;
+    max-height: 405px;
+  }
+}
+.home-header-content {
+  padding: 50px;
+  position: relative;
+  z-index: 1;
+}
+
+.movie-details-name {
+  margin-bottom: 5px;
+  font-style: normal;
+  font-weight: 600;
+  font-size: 25px;
+  line-height: 62px;
+  color: #ffffff;
+  margin-top: 1px;
+}
+
+.movies-details-play-button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 15px;
+  border: 0px;
+  color: #171f46;
+  font-weight: 600;
+  background: #ffffff;
+  border-radius: 4px;
+  margin-top: 30px;
+}
+
+.movie-details-description {
+  margin-top: 30px;
+  margin-bottom: 12px;
+  font-style: normal;
+  font-weight: 500;
+  font-size: 20px;
+  line-height: 26px;
+  color: #ffffff;
+  width: 90%;
+}
+@media screen and (max-width: 767px) {
+  .sm-devices {
+    display: block;
+  }
+
+  .lg-devices {
+    visibility: hidden;
+  }
+
+  .home-poster-title {
+    font-size: 32px;
+    font-weight: 500;
+    line-height: 40px;
+    text-decoration: underline;
+  }
+
+  .home-poster-overview {
+    font-size: 16px;
+    line-height: 20px;
+    margin-top: 20px;
+  }
+
+  .home-poster-play-btn {
+    width: 60px;
+    height: 30px;
+    margin-top: 20px;
+  }
+
+  .heading-container {
+    padding: 20px;
+    align-items: center;
+    text-align: center;
+  }
+
+  .devices-container {
+    min-height: 500px;
+    padding: 20px;
+  }
+
+  .home-header-content {
+    padding: 20px;
+  }
+
+  .movie-details-name {
+    font-size: 20px;
+    line-height: 40px;
+    margin-top: 10px;
+  }
+
+  .movie-details-description {
+    font-size: 16px;
+    line-height: 22px;
+    width: 100%;
+    margin-top: 20px;
+  }
+
+  .movies-details-play-button {
+    padding: 8px 12px;
+    font-size: 14px;
+    margin-top: 20px;
+  }
+}
